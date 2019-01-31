@@ -2,11 +2,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Conversation{
-    Integer conversationID;
+    private String conversationID;
+    Boolean conversationLongRunning;
     private Map<String,Object> scopedItems;
 
-    public Conversation(Integer id){
+    public Conversation(String id){
         this.conversationID=id;
+        conversationLongRunning = false;
         this.scopedItems = new HashMap<>();
     }
     void setValue(String name, Object obj){
@@ -14,5 +16,19 @@ public class Conversation{
     }
     Object getReference(String name){
         return this.scopedItems.get(name);
+    }
+    String getId(){
+        return this.conversationID;
+    }
+    void begin(){
+        this.conversationLongRunning = true;
+    }
+    void end(){
+        this.conversationLongRunning = false;
+    }
+    void endRequest(){
+        if(!conversationLongRunning){
+            ConversationManager.getInstance().removeConversation(this.conversationID);
+        }
     }
 }
