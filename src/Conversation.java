@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class Conversation implements Visitable{
@@ -7,6 +8,8 @@ public class Conversation implements Visitable{
     private Map<String,Object> scopedItems;
     private long timeOutTime;
     private long timeOutPeriod;
+    private String parentId;
+    private LinkedList<String> nestedIds;
 
     @Override
     public void accept(Visitor visitor) {
@@ -14,11 +17,7 @@ public class Conversation implements Visitable{
     }
 
     public Conversation(String id){
-        this.conversationID=id;
-        this.state = new ConversationShortRunningState(this);
-        this.scopedItems = new HashMap<>();
-        this.timeOutPeriod = 20*60*1000;
-        setTimeOut();
+        this(id, 20*60*1000);
     }
 
     public Conversation(String id,long timeOutPeriod){
@@ -26,8 +25,19 @@ public class Conversation implements Visitable{
         this.state = new ConversationShortRunningState(this);
         this.scopedItems = new HashMap<>();
         this.timeOutPeriod = timeOutPeriod;
+        this.parentId = null;
+        this.nestedIds = new LinkedList<>();
         setTimeOut();
     }
+
+    void setParent(String parentId){
+        this.parentId = parentId;
+    }
+
+    void addNested(String id){
+        this.nestedIds.add(id);
+    }
+
     void setTimeOut(){
         this.timeOutTime = System.currentTimeMillis() + timeOutPeriod;
     }
@@ -67,6 +77,17 @@ public class Conversation implements Visitable{
     }
     void endRequest(){
         if(this.state.toString().equals("longRunning")){
+            for (String id: this.nestedIds
+                 ) {
+                try {
+                    ConversationManager.getInstance().getConversation(id).endRequest();
+                } catch (ConversationException e) {
+                    e.printStackTrace();
+                }
+                this.nestedIds.remove(id);
+            }
+
+
             try {
                 System.out.println("end on longRunning");
                 this.end();

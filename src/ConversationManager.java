@@ -45,6 +45,21 @@ public class ConversationManager{
         return this.conversations.get(conversationId);
     }
 
+    public synchronized Conversation createNestedConversation(String parentId, long timeOutPeriod) throws
+            ConversationException{
+        if(this.conversations.get(parentId).getStateAsString().equals("shortRunning"))
+            throw new ConversationException("No conversation with given ID");
+
+        String conversationId = UUID.randomUUID().toString().replace("-", "");
+        if(!this.conversations.containsKey(conversationId)){
+            Conversation nested = new Conversation(conversationId,timeOutPeriod);
+            nested.setParent(parentId);
+            this.conversations.put(conversationId,nested);
+            this.conversations.get(parentId).addNested(conversationId);
+        }
+        return this.conversations.get(conversationId);
+    }
+
     Map<String, Conversation> getConversationsMap() {
         return conversations;
     }
