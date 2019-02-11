@@ -51,6 +51,11 @@ public class Conversation implements Visitable{
             this.state = new ConversationShortRunningState(this);
         }
     }
+
+    String getStateAsString(){
+        return this.state.toString();
+    }
+
     String getId(){
         return this.conversationID;
     }
@@ -61,8 +66,21 @@ public class Conversation implements Visitable{
         this.state.endAction();
     }
     void endRequest(){
-        if(this.state.toString().equals("shortRunning")){
-            ConversationManager.getInstance().removeConversation(this.conversationID);
+        if(this.state.toString().equals("longRunning")){
+            try {
+                System.out.println("end on longRunning");
+                this.end();
+            } catch (ConversationException e) {
+                e.printStackTrace();
+            }
+
         }
+        System.out.println("manual conv delete");
+        ConversationManager.getInstance().removeConversation(this.conversationID);
+//        else
+//            System.out.println("short - nie usuwam");
+//        if(this.state.toString().equals("shortRunning")){
+//            ConversationManager.getInstance().removeConversation(this.conversationID);
+//        }
     }
 }

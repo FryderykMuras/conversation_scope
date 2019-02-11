@@ -19,10 +19,11 @@ public class TimeoutController implements Runnable,Visitor{
     }
 
     @Override
-    public void visit(Conversation conv) {
-        if((conv.getTimeOut()-System.currentTimeMillis()) < 0){
+    public synchronized void visit(Conversation conv) {
+        if(conv.getStateAsString().equals("shortRunning") && (conv.getTimeOut()-System.currentTimeMillis()) < 0){
             System.out.println("Usuwanie konwersacji po timeout");
-            this.manager.removeConversation(conv.getId());
+            //this.manager.removeConversation(conv.getId());
+            conv.endRequest();
         }
     }
 

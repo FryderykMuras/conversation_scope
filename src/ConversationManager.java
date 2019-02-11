@@ -19,7 +19,7 @@ public class ConversationManager{
         if(INSTANCE == null) {
             INSTANCE = new ConversationManager();
         }
-        System.out.println("Singletone");
+        //System.out.println("Singletone");
         return INSTANCE;
     }
 
