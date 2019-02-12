@@ -73,31 +73,22 @@ public class Conversation implements Visitable{
         this.state.beginAction();
     }
     void end() throws ConversationException{
-        this.state.endAction();
-    }
-    void endRequest(){
-        if(this.state.toString().equals("longRunning")){
-            for (String id: this.nestedIds
-                 ) {
-                try {
-                    ConversationManager.getInstance().getConversation(id).endRequest();
-                } catch (ConversationException e) {
-                    e.printStackTrace();
-                }
-                this.nestedIds.remove(id);
-            }
-
-
+        for (String id: this.nestedIds
+                ) {
             try {
-                System.out.println("end on longRunning");
-                this.end();
+                ConversationManager.getInstance().getConversation(id).end();
             } catch (ConversationException e) {
                 e.printStackTrace();
             }
-
+            //nie wiem czy to powinno zostać...
+            //this.nestedIds.remove(id);
         }
-        System.out.println("manual conv delete");
-        ConversationManager.getInstance().removeConversation(this.conversationID);
+
+        this.state.endAction();
+    }
+    void endRequest(){
+    System.out.println("manual conv delete");
+    ConversationManager.getInstance().removeConversation(this.conversationID);
 //        else
 //            System.out.println("short - nie usuwam");
 //        if(this.state.toString().equals("shortRunning")){
