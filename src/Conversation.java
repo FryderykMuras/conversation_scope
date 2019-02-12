@@ -22,7 +22,7 @@ public class Conversation implements Visitable{
 
     public Conversation(String id,long timeOutPeriod){
         this.conversationID=id;
-        this.state = new ConversationShortRunningState(this);
+        this.state = StateFactory.getShortRunningState();
         this.scopedItems = new HashMap<>();
         this.timeOutPeriod = timeOutPeriod;
         this.parentId = null;
@@ -39,6 +39,13 @@ public class Conversation implements Visitable{
     }
 
     void setTimeOut(){
+        if(this.parentId != null){
+            try {
+                ConversationManager.getInstance().getConversation(parentId).setTimeOut();
+            } catch (ConversationException e){
+                e.printStackTrace();
+            }
+        }
         this.timeOutTime = System.currentTimeMillis() + timeOutPeriod;
     }
     long getTimeOut(){
@@ -54,12 +61,8 @@ public class Conversation implements Visitable{
             throw new ConversationException("No value with given name in this scope");
         }
     }
-    void setState(String type){
-        if(type.equals("longRunning")){
-            this.state = new ConversationLongRunningState(this);
-        }else if(type.equals("shortRunning")){
-            this.state = new ConversationShortRunningState(this);
-        }
+    void setState(ConversationState state){
+        this.state = state;
     }
 
     String getStateAsString(){
@@ -70,7 +73,7 @@ public class Conversation implements Visitable{
         return this.conversationID;
     }
     void begin() throws ConversationException{
-        this.state.beginAction();
+        this.state.beginAction(this);
     }
     void end() throws ConversationException{
         for (String id: this.nestedIds) {
@@ -83,7 +86,7 @@ public class Conversation implements Visitable{
             //this.nestedIds.remove(id);
         }
 
-        this.state.endAction();
+        this.state.endAction(this);
     }
     void endRequest(){
         for (String id: this.nestedIds){
@@ -93,7 +96,7 @@ public class Conversation implements Visitable{
                 e.printStackTrace();
             }
         }
-        this.state.endOfRequestAction();
+        this.state.endOfRequestAction(this);
 
 //    System.out.println("manual conv delete");
 //    ConversationManager.getInstance().removeConversation(this.conversationID);

@@ -21,7 +21,7 @@ public class Main {
         conv.setValue("name1",new StringBuffer("cccc"));
         System.out.println(conv.getReference("name1"));
         System.out.println(conv.getReference("name2"));
-        conv.end(); // zmieniamy stan konversacji z long running na short running
+        //conv.end(); // zmieniamy stan konwersacji z long running na short running
         conv.endRequest();
         long tt = System.currentTimeMillis();
 

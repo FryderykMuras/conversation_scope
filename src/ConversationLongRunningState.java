@@ -1,17 +1,13 @@
 public class ConversationLongRunningState implements ConversationState {
-    private Conversation conv;
-    ConversationLongRunningState(Conversation conv){
-        this.conv = conv;
-    }
 
     @Override
-    public void beginAction() throws ConversationException{
+    public void beginAction(Conversation conv) throws ConversationException{
         throw new ConversationException("Long-running conversation already active");
     }
 
     @Override
-    public void endAction() throws ConversationException {
-        conv.setState("shortRunning");
+    public void endAction(Conversation conv) throws ConversationException {
+        conv.setState(StateFactory.getShortRunningState());
     }
 
     @Override
@@ -19,7 +15,7 @@ public class ConversationLongRunningState implements ConversationState {
         return "longRunning";
     }
     @Override
-    public void endOfRequestAction(){
+    public void endOfRequestAction(Conversation conv){
         ;
     }
 }

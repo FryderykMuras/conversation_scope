@@ -1,6 +1,6 @@
 interface ConversationState {
-    void beginAction() throws ConversationException;
-    void endAction() throws ConversationException;
-    void endOfRequestAction();
+    void beginAction(Conversation conv) throws ConversationException;
+    void endAction(Conversation conv) throws ConversationException;
+    void endOfRequestAction(Conversation conv);
     String toString();
 }
