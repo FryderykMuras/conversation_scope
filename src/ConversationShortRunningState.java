@@ -18,4 +18,10 @@ public class ConversationShortRunningState implements ConversationState{
     public String toString() {
         return "shortRunning";
     }
+
+    @Override
+    public void endOfRequestAction(){
+        ConversationManager.getInstance().removeConversation(this.conv.getId());
+        System.out.println("ShortRunningConversation ended");
+    }
 }

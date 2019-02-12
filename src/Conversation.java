@@ -73,8 +73,7 @@ public class Conversation implements Visitable{
         this.state.beginAction();
     }
     void end() throws ConversationException{
-        for (String id: this.nestedIds
-                ) {
+        for (String id: this.nestedIds) {
             try {
                 ConversationManager.getInstance().getConversation(id).end();
             } catch (ConversationException e) {
@@ -87,8 +86,17 @@ public class Conversation implements Visitable{
         this.state.endAction();
     }
     void endRequest(){
-    System.out.println("manual conv delete");
-    ConversationManager.getInstance().removeConversation(this.conversationID);
+        for (String id: this.nestedIds){
+            try {
+                ConversationManager.getInstance().getConversation(id).endRequest();
+            } catch (ConversationException e) {
+                e.printStackTrace();
+            }
+        }
+        this.state.endOfRequestAction();
+
+//    System.out.println("manual conv delete");
+//    ConversationManager.getInstance().removeConversation(this.conversationID);
 //        else
 //            System.out.println("short - nie usuwam");
 //        if(this.state.toString().equals("shortRunning")){

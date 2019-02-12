@@ -18,4 +18,8 @@ public class ConversationLongRunningState implements ConversationState {
     public String toString() {
         return "longRunning";
     }
+    @Override
+    public void endOfRequestAction(){
+        ;
+    }
 }

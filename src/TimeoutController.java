@@ -20,10 +20,10 @@ public class TimeoutController implements Runnable,Visitor{
 
     @Override
     public synchronized void visit(Conversation conv) {
-        if(conv.getStateAsString().equals("shortRunning") && (conv.getTimeOut()-System.currentTimeMillis()) < 0){
+        if(conv.getStateAsString().equals("longRunning") && (conv.getTimeOut()-System.currentTimeMillis()) < 0){
             System.out.println("Usuwanie konwersacji po timeout");
-            //this.manager.removeConversation(conv.getId());
-            conv.endRequest();
+            this.manager.removeConversation(conv.getId());
+            //conv.endRequest();
         }
     }
 
@@ -35,7 +35,7 @@ public class TimeoutController implements Runnable,Visitor{
             System.out.println("Running");
             currentTime = System.currentTimeMillis();
             for (Map.Entry<String, Conversation> entry : conversations.entrySet()) {
-                visit(entry.getValue());
+                entry.getValue().accept(this);
             }
 
            try {

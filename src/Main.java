@@ -17,6 +17,7 @@ public class Main {
         System.out.println(conv.getReference("name1"));
         System.out.println(conv.getReference("name2"));
         //conv.end();
+        conv.end(); // zmieniamy stan konversacji z long running na short running
         conv.endRequest();
         long tt = System.currentTimeMillis();
 
@@ -49,8 +50,8 @@ public class Main {
         conv.begin();
         //conv1.begin();
         String ret = conv.getId();
-        //conv1.endRequest();
-
+        conv1.endRequest();
+        conv.endRequest();
         return ret;
     }
 }
