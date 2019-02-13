@@ -1,3 +1,5 @@
+package conversationScope;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -16,11 +18,11 @@ public class Conversation implements Visitable{
         visitor.visit(this);
     }
 
-    public Conversation(String id){
+    Conversation(String id){
         this(id, 20*60*1000);
     }
 
-    public Conversation(String id,long timeOutPeriod){
+    Conversation(String id,long timeOutPeriod){
         this.conversationID=id;
         this.state = StateFactory.getShortRunningState();
         this.scopedItems = new HashMap<>();
@@ -50,7 +52,7 @@ public class Conversation implements Visitable{
         this.parentId = parentId;
     }
 
-    void setTimeOut(){
+    public void setTimeOut(){
         if(this.parentId != null){
             try {
                 ConversationManager.getInstance().getConversation(parentId).setTimeOut();
@@ -60,16 +62,19 @@ public class Conversation implements Visitable{
         }
         this.timeOutTime = System.currentTimeMillis() + timeOutPeriod;
     }
-    void setTimeOutPeriod(long timeOutPeriod){
+    private void setTimeOutPeriod(long timeOutPeriod){
         this.timeOutPeriod = timeOutPeriod;
     }
+
     long getTimeOut(){
         return this.timeOutTime;
     }
-    void setValue(String name, Object obj){
+
+    public void setValue(String name, Object obj){
         this.scopedItems.put(name,obj);
     }
-    Object getValue(String name)throws ConversationException{
+
+    public Object getValue(String name)throws ConversationException{
         if(this.scopedItems.containsKey(name)){
             return this.scopedItems.get(name);
         }else{
@@ -84,13 +89,15 @@ public class Conversation implements Visitable{
         return this.state.toString();
     }
 
-    String getId(){
+    public String getId(){
         return this.conversationID;
     }
+
     public Conversation begin() throws ConversationException{
         this.state.beginAction(this);
         return this;
     }
+
     public Conversation end() throws ConversationException{
         if(this.nestedIds !=null) {
             for (String id : this.nestedIds) {
@@ -99,15 +106,14 @@ public class Conversation implements Visitable{
                 } catch (ConversationException e) {
                     e.printStackTrace();
                 }
-                //nie wiem czy to powinno zostać...
-                //this.nestedIds.remove(id);
             }
         }
 
         this.state.endAction(this);
         return this;
     }
-    Conversation endRequest(){
+
+    public void endRequest(){
         if(this.nestedIds !=null) {
             for (String id : this.nestedIds) {
                 try {
@@ -118,14 +124,5 @@ public class Conversation implements Visitable{
             }
         }
         this.state.endOfRequestAction(this);
-        return this;
-
-//    System.out.println("manual conv delete");
-//    ConversationManager.getInstance().removeConversation(this.conversationID);
-//        else
-//            System.out.println("short - nie usuwam");
-//        if(this.state.toString().equals("shortRunning")){
-//            ConversationManager.getInstance().removeConversation(this.conversationID);
-//        }
     }
 }

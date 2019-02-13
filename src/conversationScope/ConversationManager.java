@@ -1,3 +1,5 @@
+package conversationScope;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +32,7 @@ public class ConversationManager{
         }
         throw new ConversationException("No conversation with given ID");
     }
+
     public synchronized Conversation createConversation(){
         String conversationId = UUID.randomUUID().toString().replace("-", "");
         if(!this.conversations.containsKey(conversationId)){
@@ -55,7 +58,7 @@ public class ConversationManager{
         return nested;
     }
 
-    Map<String, Conversation> getConversationsMap() {
+    public Map<String, Conversation> getConversationsMap() {
         return conversations;
     }
 

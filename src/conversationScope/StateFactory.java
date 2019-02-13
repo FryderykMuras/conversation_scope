@@ -1,3 +1,5 @@
+package conversationScope;
+
 class StateFactory {
     private static ConversationState LongRunningState;
     private static ConversationState ShortRunningState;

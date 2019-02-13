@@ -1,16 +1,18 @@
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import conversationScope.ConversationManager;
+import conversationScope.Conversation;
+import conversationScope.ConversationException;
 
 public class Main {
     public static void main(String[] args)throws ConversationException{
-        //ConversationManager.getInstance().getConversation(1).setValue("name", new StringBuffer("aaaa"));
-        //ConversationManager.getInstance().getConversation(2).setValue("name", "bbbb");
+        //conversationScope.ConversationManager.getInstance().getConversation(1).setValue("name", new StringBuffer("aaaa"));
+        //conversationScope.ConversationManager.getInstance().getConversation(2).setValue("name", "bbbb");
 
-        //StringBuffer nameA=(StringBuffer)ConversationManager.getInstance().getConversation(1).getReference("name");
-        //String nameB=(String)ConversationManager.getInstance().getConversation(2).getReference("name");
-        //ConversationManager.getInstance().getConversation(1).begin();
-        //ConversationManager.getInstance().getConversation(1).endRequest();
+        //StringBuffer nameA=(StringBuffer)conversationScope.ConversationManager.getInstance().getConversation(1).getReference("name");
+        //String nameB=(String)conversationScope.ConversationManager.getInstance().getConversation(2).getReference("name");
+        //conversationScope.ConversationManager.getInstance().getConversation(1).begin();
+        //conversationScope.ConversationManager.getInstance().getConversation(1).endRequest();
         //nameA.append(" cccc");
         String id = testSet("1");
         Conversation conv = ConversationManager.getInstance().getConversation(id);
@@ -46,10 +48,10 @@ public class Main {
 
 //        String time = Long.toString(tt-System.currentTimeMillis());
 //        System.out.println(time);
-//        Conversation conv1 = ConversationManager.getInstance().getConversation(id);
+//        conversationScope.Conversation conv1 = conversationScope.ConversationManager.getInstance().getConversation(id);
 //        System.out.println(conv1.getReference("name1"));
 //        System.out.println(conv1.getReference("name2"));
-        //StringBuffer nameC=(StringBuffer)ConversationManager.getInstance().getConversation(1).getReference("name");
+        //StringBuffer nameC=(StringBuffer)conversationScope.ConversationManager.getInstance().getConversation(1).getReference("name");
         //System.out.println(nameC);
 
     }

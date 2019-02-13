@@ -1,10 +1,13 @@
+package conversationScope;
+
 import java.util.Map;
 
-public class TimeoutController implements Runnable,Visitor{
+class TimeoutController implements Runnable,Visitor{
     private ConversationManager manager;
     private Map<String,Conversation> conversations;
     private long currentTime;
     private boolean doStop = false;
+
     TimeoutController(ConversationManager m){
         this.manager = m;
         currentTime = System.currentTimeMillis();
@@ -27,7 +30,6 @@ public class TimeoutController implements Runnable,Visitor{
             } catch (ConversationException e) {
                 e.printStackTrace();
             }
-            //conv.endRequest();
         }
     }
 
@@ -35,7 +37,6 @@ public class TimeoutController implements Runnable,Visitor{
     public void run(){
         while(keepRunning()) {
             this.conversations=manager.getConversationsMap();
-            // keep doing what this thread should do.
             System.out.println("Running");
             currentTime = System.currentTimeMillis();
             for (Map.Entry<String, Conversation> entry : conversations.entrySet()) {
@@ -43,7 +44,7 @@ public class TimeoutController implements Runnable,Visitor{
             }
 
            try {
-                Thread.sleep(1L * 1000L);
+                Thread.sleep(1000L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

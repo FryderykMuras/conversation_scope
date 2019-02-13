@@ -1,4 +1,6 @@
-public class ConversationLongRunningState implements ConversationState {
+package conversationScope;
+
+class ConversationLongRunningState implements ConversationState {
 
     @Override
     public void beginAction(Conversation conv) throws ConversationException{
