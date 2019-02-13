@@ -52,7 +52,7 @@ public class Conversation implements Visitable{
         this.parentId = parentId;
     }
 
-    public void setTimeOut(){
+    void setTimeOut(){
         if(this.parentId != null){
             try {
                 ConversationManager.getInstance().getConversation(parentId).setTimeOut();
@@ -99,7 +99,7 @@ public class Conversation implements Visitable{
         this.state = state;
     }
 
-    String getStateAsString(){
+    public String getStateAsString(){
         return this.state.toString();
     }
 

@@ -31,7 +31,7 @@ public class Main {
             TimeUnit.SECONDS.sleep(4);
         }catch(Exception e){}
 
-        nestedConv.setTimeOut();
+
         nestedConv.endRequest();
 
         Map<String, Conversation> convs = ConversationManager.getInstance().getConversationsMap();
