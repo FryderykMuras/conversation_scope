@@ -81,6 +81,20 @@ public class Conversation implements Visitable{
             throw new ConversationException("No value with given name in this scope");
         }
     }
+
+    public Object getParentValue(String name) throws ConversationException{
+        if (this.parentId == null)
+            throw new ConversationException("No parent conversation");
+        else{
+            Conversation parent = ConversationManager.getInstance().getConversation(this.parentId);
+            if(parent.scopedItems.containsKey(name)){
+                return parent.scopedItems.get(name);
+            }else{
+                throw new ConversationException("No value with given name in parent scope");
+            }
+        }
+    }
+
     void setState(ConversationState state){
         this.state = state;
     }
