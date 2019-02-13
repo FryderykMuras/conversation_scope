@@ -22,7 +22,11 @@ public class TimeoutController implements Runnable,Visitor{
     public synchronized void visit(Conversation conv) {
         if(conv.getStateAsString().equals("longRunning") && (conv.getTimeOut()-System.currentTimeMillis()) < 0){
             System.out.println("Usuwanie konwersacji po timeout");
-            this.manager.removeConversation(conv.getId());
+            try {
+                conv.end().endRequest();
+            } catch (ConversationException e) {
+                e.printStackTrace();
+            }
             //conv.endRequest();
         }
     }

@@ -1,6 +1,6 @@
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConversationManager{
     private static ConversationManager INSTANCE;
@@ -8,7 +8,7 @@ public class ConversationManager{
     private Thread timeoutController;
 
     private ConversationManager() {
-        this.conversations = new HashMap<>();
+        this.conversations = new ConcurrentHashMap<>();
         this.timeoutController = new Thread(new TimeoutController(this));
         timeoutController.start();
         System.out.println("new instance");
@@ -30,14 +30,14 @@ public class ConversationManager{
         }
         throw new ConversationException("No conversation with given ID");
     }
-    public synchronized Conversation getConversation(){
+    public synchronized Conversation createConversation(){
         String conversationId = UUID.randomUUID().toString().replace("-", "");
         if(!this.conversations.containsKey(conversationId)){
             this.conversations.put(conversationId,new Conversation(conversationId));
         }
         return this.conversations.get(conversationId);
     }
-    public synchronized Conversation getConversation(long timeOutPeriod){
+    public synchronized Conversation createConversation(long timeOutPeriod){
         String conversationId = UUID.randomUUID().toString().replace("-", "");
         if(!this.conversations.containsKey(conversationId)){
             this.conversations.put(conversationId,new Conversation(conversationId,timeOutPeriod));
@@ -45,19 +45,14 @@ public class ConversationManager{
         return this.conversations.get(conversationId);
     }
 
-    public synchronized Conversation createNestedConversation(String parentId, long timeOutPeriod) throws
+    synchronized Conversation createNestedConversation(String parentId) throws
             ConversationException{
-        if(this.conversations.get(parentId).getStateAsString().equals("shortRunning"))
-            throw new ConversationException("No conversation with given ID");
-
-        String conversationId = UUID.randomUUID().toString().replace("-", "");
-        if(!this.conversations.containsKey(conversationId)){
-            Conversation nested = new Conversation(conversationId,timeOutPeriod);
-            nested.setParent(parentId);
-            this.conversations.put(conversationId,nested);
-            this.conversations.get(parentId).addNested(conversationId);
+        if((!this.conversations.containsKey(parentId)) || this.conversations.get(parentId).getStateAsString().equals("shortRunning")) {
+            throw new ConversationException("No conversation with given ID or conversation with given ID is short-running");
         }
-        return this.conversations.get(conversationId);
+            Conversation nested = this.createConversation();
+            nested.setParent(parentId);
+        return nested;
     }
 
     Map<String, Conversation> getConversationsMap() {

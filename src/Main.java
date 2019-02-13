@@ -14,16 +14,23 @@ public class Main {
         //nameA.append(" cccc");
         String id = testSet("1");
         Conversation conv = ConversationManager.getInstance().getConversation(id);
-        System.out.println(conv.getReference("name1"));
-        System.out.println(conv.getReference("name2"));
+        System.out.println(conv.getValue("name1"));
+        System.out.println(conv.getValue("name2"));
 
         //podmiana obiektu o już istniejącej nazwie
         conv.setValue("name1",new StringBuffer("cccc"));
-        System.out.println(conv.getReference("name1"));
-        System.out.println(conv.getReference("name2"));
+        System.out.println(conv.getValue("name1"));
+        System.out.println(conv.getValue("name2"));
         //conv.end(); // zmieniamy stan konwersacji z long running na short running
+        Conversation nestedConv = conv.AddNestedConversation(20*1000).begin();
         conv.endRequest();
         long tt = System.currentTimeMillis();
+        try{
+            TimeUnit.SECONDS.sleep(4);
+        }catch(Exception e){}
+
+        nestedConv.setTimeOut();
+        nestedConv.endRequest();
 
         Map<String, Conversation> convs = ConversationManager.getInstance().getConversationsMap();
         System.out.println("number of convs: " + Integer.toString(convs.size()));
@@ -47,14 +54,14 @@ public class Main {
 
     }
     public static String testSet(String id)throws ConversationException{
-        Conversation conv = ConversationManager.getInstance().getConversation(5*1000);
-        Conversation conv1 = ConversationManager.getInstance().getConversation(7*1000);
+        Conversation conv = ConversationManager.getInstance().createConversation(5*1000);
+        Conversation conv1 = ConversationManager.getInstance().createConversation(7*1000);
         conv.setValue("name1", new StringBuffer("aaaa"));
         conv.setValue("name2", new StringBuffer("bbbb"));
         conv.begin();
         //conv1.begin();
         String ret = conv.getId();
-        conv1.endRequest();
+        conv1.begin().endRequest();
         conv.endRequest();
         return ret;
     }

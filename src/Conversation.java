@@ -26,16 +26,28 @@ public class Conversation implements Visitable{
         this.scopedItems = new HashMap<>();
         this.timeOutPeriod = timeOutPeriod;
         this.parentId = null;
-        this.nestedIds = new LinkedList<>();
         setTimeOut();
     }
 
-    void setParent(String parentId){
-        this.parentId = parentId;
+    public Conversation AddNestedConversation() throws ConversationException{
+        if(this.nestedIds==null){
+            this.nestedIds = new LinkedList<>();
+        }
+        Conversation conv = ConversationManager.getInstance().createNestedConversation(this.conversationID);
+        this.nestedIds.add(conv.getId());
+        return conv;
     }
 
-    void addNested(String id){
-        this.nestedIds.add(id);
+    public Conversation AddNestedConversation(long TimeOutPeriod) throws ConversationException{
+        Conversation conv = this.AddNestedConversation();
+        conv.setTimeOutPeriod(TimeOutPeriod);
+        conv.setTimeOut();
+        return conv;
+    }
+
+
+    void setParent(String parentId){
+        this.parentId = parentId;
     }
 
     void setTimeOut(){
@@ -48,13 +60,16 @@ public class Conversation implements Visitable{
         }
         this.timeOutTime = System.currentTimeMillis() + timeOutPeriod;
     }
+    void setTimeOutPeriod(long timeOutPeriod){
+        this.timeOutPeriod = timeOutPeriod;
+    }
     long getTimeOut(){
         return this.timeOutTime;
     }
     void setValue(String name, Object obj){
         this.scopedItems.put(name,obj);
     }
-    Object getReference(String name)throws ConversationException{
+    Object getValue(String name)throws ConversationException{
         if(this.scopedItems.containsKey(name)){
             return this.scopedItems.get(name);
         }else{
@@ -72,31 +87,38 @@ public class Conversation implements Visitable{
     String getId(){
         return this.conversationID;
     }
-    void begin() throws ConversationException{
+    public Conversation begin() throws ConversationException{
         this.state.beginAction(this);
+        return this;
     }
-    void end() throws ConversationException{
-        for (String id: this.nestedIds) {
-            try {
-                ConversationManager.getInstance().getConversation(id).end();
-            } catch (ConversationException e) {
-                e.printStackTrace();
+    public Conversation end() throws ConversationException{
+        if(this.nestedIds !=null) {
+            for (String id : this.nestedIds) {
+                try {
+                    ConversationManager.getInstance().getConversation(id).end();
+                } catch (ConversationException e) {
+                    e.printStackTrace();
+                }
+                //nie wiem czy to powinno zostać...
+                //this.nestedIds.remove(id);
             }
-            //nie wiem czy to powinno zostać...
-            //this.nestedIds.remove(id);
         }
 
         this.state.endAction(this);
+        return this;
     }
-    void endRequest(){
-        for (String id: this.nestedIds){
-            try {
-                ConversationManager.getInstance().getConversation(id).endRequest();
-            } catch (ConversationException e) {
-                e.printStackTrace();
+    Conversation endRequest(){
+        if(this.nestedIds !=null) {
+            for (String id : this.nestedIds) {
+                try {
+                    ConversationManager.getInstance().getConversation(id).endRequest();
+                } catch (ConversationException e) {
+                    e.printStackTrace();
+                }
             }
         }
         this.state.endOfRequestAction(this);
+        return this;
 
 //    System.out.println("manual conv delete");
 //    ConversationManager.getInstance().removeConversation(this.conversationID);
